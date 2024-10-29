@@ -153,7 +153,6 @@ export class componenteAñadirCurso implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
   ) {}
-  
 
   ngOnInit() {
     this.route.params.subscribe((params) => {
@@ -222,6 +221,7 @@ export class componenteAñadirCurso implements OnInit {
         (response) => {
           console.log("Curso actualizado", response);
           this.resetForm();
+          this.router.navigate(["/view-cursos"]);
         },
         (error) => console.error("Error actualizando curso", error),
       );
@@ -230,6 +230,7 @@ export class componenteAñadirCurso implements OnInit {
         (response) => {
           console.log("Curso agregado", response);
           this.resetForm();
+          this.router.navigate(["/view-cursos"]);
         },
         (error) => console.error("Error agregando curso", error),
       );
@@ -248,11 +249,9 @@ export class componenteAñadirCurso implements OnInit {
     this.curso.alumnos.splice(index, 1);
   }
 
-
   cancel() {
     this.router.navigate(["/view-cursos"]);
   }
-
 
   resetForm() {
     this.curso = {

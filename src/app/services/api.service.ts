@@ -10,7 +10,7 @@ import { Tema } from "../models/tema.model";
   providedIn: "root",
 })
 export class ApiService {
-  private apiUrl = "http://localhost:8082/api"; 
+  private apiUrl = "http://localhost:8082/api";
 
   constructor(private http: HttpClient) {}
 
@@ -28,7 +28,7 @@ export class ApiService {
   }
 
   deleteCurso(cursoId: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${cursoId}`);
+    return this.http.delete(`${this.apiUrl}/cursos/${cursoId}`);
   }
 
   updateCurso(curso: Curso): Observable<Curso> {
@@ -48,10 +48,7 @@ export class ApiService {
   }
 
   updateAlumno(alumno: Alumno): Observable<Alumno> {
-    return this.http.put<Alumno>(
-      `${this.apiUrl}/alumnos/${alumno.id}`,
-      alumno,
-    );
+    return this.http.put<Alumno>(`${this.apiUrl}/alumnos/${alumno.id}`, alumno);
   }
 
   deleteAlumno(id: number): Observable<void> {
@@ -82,7 +79,6 @@ export class ApiService {
     return this.http.delete<void>(`${this.apiUrl}/docentes/${id}`);
   }
 
-
   // Temas
   getTemas(): Observable<Tema[]> {
     return this.http.get<Tema[]>(`${this.apiUrl}/temas`);
@@ -104,14 +100,13 @@ export class ApiService {
     return this.http.delete<void>(`${this.apiUrl}/temas/${id}`);
   }
 
-
   // Búsqueda de cursos por fecha
   buscarCursoPorFecha(fechaFin: string): Observable<Curso[]> {
     return this.http.get<Curso[]>(
       `${this.apiUrl}/cursos/fecha-fin?fecha=${fechaFin}`,
     );
   }
- 
+
   // Método para obtener estudiantes por legajo de docente
   getAlumnosPorLegajoDocente(legajo: string): Observable<Alumno[]> {
     return this.http.get<Alumno[]>(
