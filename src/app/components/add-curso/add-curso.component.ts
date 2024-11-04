@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { FormsModule } from "@angular/forms";
+import { FormsModule, NgForm } from "@angular/forms";
 import { ApiService } from "../../services/api.service";
 import { Curso } from "../../models/curso.model";
 import { Tema } from "../../models/tema.model";
@@ -14,29 +14,15 @@ import { ActivatedRoute, Router } from "@angular/router";
   imports: [CommonModule, FormsModule],
   template: `
     <h2>{{ isEdit ? "Editar Curso" : "Agregar Curso" }}</h2>
-    <form (ngSubmit)="onSubmit()">
+    <form #cursoForm="ngForm" (ngSubmit)="onSubmit()" novalidate>
       <div>
         <label for="tema">Tema:</label>
         <select [(ngModel)]="curso.tema.id" name="tema" required>
           <option *ngFor="let tema of temas" [value]="tema.id">
             {{ tema.nombre }}
           </option>
-          <option value="new">Agregar nuevo tema</option>
         </select>
-        <div *ngIf="curso.tema.id === undefined">
-          <input
-            [(ngModel)]="nuevoTema.nombre"
-            name="nuevoNombreTema"
-            placeholder="Nombre del nuevo tema"
-            required
-          />
-          <input
-            [(ngModel)]="nuevoTema.descripcion"
-            name="nuevaDescripcionTema"
-            placeholder="Descripción del nuevo tema"
-            required
-          />
-        </div>
+        <div *ngIf="cursoForm.submitted && !curso.tema.id" class="error">Tema es obligatorio.</div>
       </div>
 
       <div>
@@ -45,22 +31,8 @@ import { ActivatedRoute, Router } from "@angular/router";
           <option *ngFor="let docente of docentes" [value]="docente.id">
             {{ docente.nombre }}
           </option>
-          <option value="new">Agregar nuevo docente</option>
         </select>
-        <div *ngIf="curso.docente.id === undefined">
-          <input
-            [(ngModel)]="nuevoDocente.nombre"
-            name="nuevoNombreDocente"
-            placeholder="Nombre del nuevo docente"
-            required
-          />
-          <input
-            [(ngModel)]="nuevoDocente.legajo"
-            name="nuevoDocenteLegajo"
-            placeholder="Legajo del nuevo docente"
-            required
-          />
-        </div>
+        <div *ngIf="cursoForm.submitted && !curso.docente.id" class="error">Docente es obligatorio.</div>
       </div>
 
       <div>
@@ -71,7 +43,9 @@ import { ActivatedRoute, Router } from "@angular/router";
           type="date"
           required
         />
+        <div *ngIf="cursoForm.submitted && !curso.fechaInicio" class="error">Fecha de inicio es obligatoria.</div>
       </div>
+
       <div>
         <label for="fechaFin">Fecha de fin:</label>
         <input
@@ -80,15 +54,19 @@ import { ActivatedRoute, Router } from "@angular/router";
           type="date"
           required
         />
+        <div *ngIf="cursoForm.submitted && !curso.fechaFin" class="error">Fecha de fin es obligatoria.</div>
       </div>
+
       <div>
         <label for="precio">Precio:</label>
         <input
           [(ngModel)]="curso.precio"
           name="precio"
           type="number"
+          min="0"
           required
         />
+        <div *ngIf="cursoForm.submitted && (!curso.precio || curso.precio < 0)" class="error">Precio debe ser un valor positivo.</div>
       </div>
 
       <div>
@@ -98,37 +76,25 @@ import { ActivatedRoute, Router } from "@angular/router";
             <option *ngFor="let alumno of alumnos" [value]="alumno.id">
               {{ alumno.nombre }}
             </option>
-            <option value="new">Agregar nuevo alumno</option>
           </select>
-          <div *ngIf="alumno.id === undefined">
-            <input
-              [(ngModel)]="alumno.nombre"
-              name="nuevonombreAlumno{{ i }}"
-              placeholder="Nombre del nuevo alumno"
-              required
-            />
-            <input
-              [(ngModel)]="alumno.fechaNacimiento"
-              name="nuevoAlumnoFechaNacimiento{{ i }}"
-              type="date"
-              placeholder="Fecha de nacimiento"
-              required
-            />
-          </div>
-          <button type="button" (click)="eliminarAlumno(i)">
-            Eliminar Alumno
-          </button>
+          <button type="button" (click)="eliminarAlumno(i)">Eliminar Alumno</button>
+          <div *ngIf="cursoForm.submitted && !alumno.id" class="error">Cada alumno debe seleccionarse.</div>
         </div>
-
         <button type="button" (click)="addAlumno()">Agregar Alumno</button>
       </div>
 
-      <button type="submit">
+      <button type="submit" [disabled]="!cursoForm.form.valid">
         {{ isEdit ? "Actualizar Curso" : "Agregar Curso" }}
       </button>
       <button type="button" (click)="cancel()">Cancelar</button>
     </form>
   `,
+  styles: [`
+    .error {
+      color: red;
+      font-size: 0.8em;
+    }
+  `]
 })
 export class componenteAñadirCurso implements OnInit {
   curso: Curso = {
@@ -139,9 +105,6 @@ export class componenteAñadirCurso implements OnInit {
     tema: { id: undefined, nombre: "", descripcion: "" },
     docente: { id: undefined, nombre: "", legajo: 0 },
   };
-
-  nuevoTema = { nombre: "", descripcion: "" };
-  nuevoDocente = { nombre: "", legajo: 0 };
 
   temas: Tema[] = [];
   docentes: Docente[] = [];
@@ -199,40 +162,28 @@ export class componenteAñadirCurso implements OnInit {
   }
 
   onSubmit() {
+    if (!this.curso.tema.id || !this.curso.docente.id || !this.curso.fechaInicio || !this.curso.fechaFin || this.curso.precio <= 0) {
+      return; // Detiene el envío si algún campo es inválido
+    }
+
     const courseToSubmit: Curso = {
       ...this.curso,
-      tema: this.curso.tema.id
-        ? { id: Number(this.curso.tema.id) }
-        : this.nuevoTema,
-      docente: this.curso.docente.id
-        ? { id: Number(this.curso.docente.id) }
-        : { ...this.nuevoDocente, legajo: Number(this.nuevoDocente.legajo) },
+      tema: { id: Number(this.curso.tema.id) },
+      docente: { id: Number(this.curso.docente.id) },
       alumnos: this.curso.alumnos.map((alumno) => ({
-        ...(alumno.id ? { id: Number(alumno.id) } : {}),
-        nombre: alumno.nombre,
-        fechaNacimiento: alumno.fechaNacimiento,
+        id: Number(alumno.id),
       })),
     };
 
-    console.log(courseToSubmit);
-
     if (this.isEdit) {
       this.apiService.updateCurso(courseToSubmit).subscribe(
-        (response) => {
-          console.log("Curso actualizado", response);
-          this.resetForm();
-          this.router.navigate(["/view-cursos"]);
-        },
-        (error) => console.error("Error actualizando curso", error),
+        () => this.router.navigate(["/view-cursos"]),
+        (error) => console.error("Error actualizando curso", error)
       );
     } else {
       this.apiService.añadirCurso(courseToSubmit).subscribe(
-        (response) => {
-          console.log("Curso agregado", response);
-          this.resetForm();
-          this.router.navigate(["/view-cursos"]);
-        },
-        (error) => console.error("Error agregando curso", error),
+        () => this.router.navigate(["/view-cursos"]),
+        (error) => console.error("Error agregando curso", error)
       );
     }
   }
@@ -252,20 +203,8 @@ export class componenteAñadirCurso implements OnInit {
   cancel() {
     this.router.navigate(["/view-cursos"]);
   }
-
-  resetForm() {
-    this.curso = {
-      fechaInicio: "",
-      fechaFin: "",
-      precio: 0,
-      alumnos: [],
-      tema: { id: undefined, nombre: "", descripcion: "" },
-      docente: { id: undefined, nombre: "", legajo: 0 },
-    };
-    this.nuevoTema = { nombre: "", descripcion: "" };
-    this.nuevoDocente = { nombre: "", legajo: 0 };
-  }
 }
+
 
 /*con existentes
 {
