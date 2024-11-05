@@ -35,12 +35,13 @@ import { Alumno } from "../../models/alumno.model";
             <button
               *ngIf="alumno.id !== undefined"
               (click)="editAlumno(alumno.id!)"
+               style="color: white; background-color: green;"
             >
               Editar
             </button>
-            <button
-              *ngIf="alumno.id !== undefined"
-              (click)="deleteAlumno(alumno.id)"
+            <button *ngIf="alumno.id !== undefined"
+            (click)="deleteAlumno(alumno.id)"
+             style="color: white; background-color: red;"
             >
               Eliminar
             </button>
@@ -68,7 +69,7 @@ export class componenteVerAlumnos implements OnInit {
     this.apiService.getAlumnos().subscribe(
       (alumnos) => {
         this.alumnos = alumnos;
-        this.filteredAlumnos = alumnos; 
+        this.filteredAlumnos = alumnos;
       },
       (error) => console.error("Error cargando alumnos", error),
     );
@@ -82,7 +83,7 @@ export class componenteVerAlumnos implements OnInit {
   }
 
   editAlumno(id: number) {
-    this.router.navigate(["/edit-alumno", id]); 
+    this.router.navigate(["/edit-alumno", id]);
   }
 
   deleteAlumno(id?: number) {

@@ -45,8 +45,8 @@ import { FormsModule } from "@angular/forms";
           <td>{{ curso.fechaInicio | date: "dd/MM/yyyy" }}</td>
           <td>{{ curso.fechaFin | date: "dd/MM/yyyy" }}</td>
           <td>
-            <button (click)="editCurso(curso.id)">Editar</button>
-            <button (click)="confirmDeleteCurso(curso.id)">Eliminar</button>
+            <button (click)="editCurso(curso.id)" style="color: white; background-color: green;">Editar</button>
+            <button (click)="confirmDeleteCurso(curso.id)" style="color: white; background-color: red;">Eliminar</button>
           </td>
         </tr>
       </tbody>
@@ -56,7 +56,7 @@ import { FormsModule } from "@angular/forms";
 export class componenteVerCursos implements OnInit {
   cursos: Curso[] = [];
   cursosFiltrados: Curso[] = [];
-  terminoBusqueda: string = ""; 
+  terminoBusqueda: string = "";
 
   constructor(
     private apiService: ApiService,
@@ -71,7 +71,7 @@ export class componenteVerCursos implements OnInit {
     this.apiService.getCursos().subscribe(
       (cursos) => {
         this.cursos = cursos;
-        this.cursosFiltrados = cursos; 
+        this.cursosFiltrados = cursos;
       },
       (error) => console.error("Error fetching courses", error),
     );
@@ -110,7 +110,7 @@ export class componenteVerCursos implements OnInit {
     this.apiService.deleteCurso(courseId).subscribe(
       (response) => {
         alert("Curso eliminado exitosamente.");
-        this.loadCursos(); 
+        this.loadCursos();
       },
       (error) => {
         alert("Error eliminando el curso.");

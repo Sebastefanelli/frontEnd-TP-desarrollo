@@ -32,10 +32,11 @@ import { Router } from "@angular/router";
           <td>{{ tema.nombre }}</td>
           <td>{{ tema.descripcion }}</td>
           <td>
-            <button (click)="editTema(tema)">Editar</button>
+            <button (click)="editTema(tema)" style="color: white; background-color: green;">Editar</button>
             <button
               *ngIf="tema.id !== undefined"
               (click)="deleteTema(tema.id)"
+               style="color: white; background-color: red;"
             >
               Eliminar
             </button>
@@ -47,8 +48,8 @@ import { Router } from "@angular/router";
 })
 export class componenteVerTemas implements OnInit {
   temas: Tema[] = [];
-  temasFiltrados: Tema[] = []; 
-  terminoBsqueda: string = ""; 
+  temasFiltrados: Tema[] = [];
+  terminoBsqueda: string = "";
 
   constructor(
     private apiService: ApiService,
@@ -63,7 +64,7 @@ export class componenteVerTemas implements OnInit {
     this.apiService.getTemas().subscribe(
       (temas) => {
         this.temas = temas;
-        this.temasFiltrados = temas; 
+        this.temasFiltrados = temas;
       },
       (error) => console.error("Error loading topics", error),
     );
@@ -77,7 +78,7 @@ export class componenteVerTemas implements OnInit {
   }
 
   editTema(tema: Tema) {
-    this.router.navigate(["/edit-tema", tema.id]); 
+    this.router.navigate(["/edit-tema", tema.id]);
   }
 
   deleteTema(id?: number) {

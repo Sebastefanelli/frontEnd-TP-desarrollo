@@ -32,10 +32,11 @@ import { Docente } from "../../models/docente.model";
           <td>{{ docente.nombre }}</td>
           <td>{{ docente.legajo }}</td>
           <td>
-            <button (click)="editDocente(docente.id!)">Editar</button>
+            <button (click)="editDocente(docente.id!)" style="color: white; background-color: green;">Editar</button>
             <button
               *ngIf="docente.id !== undefined"
               (click)="deleteDocente(docente.id)"
+               style="color: white; background-color: red;"
             >
               Eliminar
             </button>
@@ -73,8 +74,8 @@ import { Docente } from "../../models/docente.model";
 })
 export class componenteVerDocentes implements OnInit {
   docentes: Docente[] = [];
-  docentesFiltrados: Docente[] = []; 
-  terminoBusqueda: string = ""; 
+  docentesFiltrados: Docente[] = [];
+  terminoBusqueda: string = "";
   editingDocente: Docente | null = null;
 
   constructor(
@@ -90,7 +91,7 @@ export class componenteVerDocentes implements OnInit {
     this.apiService.getDocentes().subscribe(
       (docentes) => {
         this.docentes = docentes;
-        this.docentesFiltrados = docentes; 
+        this.docentesFiltrados = docentes;
       },
       (error: any) => console.error("Error loading teachers", error),
     );
@@ -104,15 +105,15 @@ export class componenteVerDocentes implements OnInit {
   }
 
   editDocente(id: number) {
-    this.router.navigate(["/edit-docente", id]); 
+    this.router.navigate(["/edit-docente", id]);
   }
 
   updateDocente() {
     if (this.editingDocente) {
       this.apiService.updateDocente(this.editingDocente).subscribe(
         () => {
-          this.loadDocentes(); 
-          this.cancelEdit(); 
+          this.loadDocentes();
+          this.cancelEdit();
         },
         (error: any) => console.error("Error updating teacher", error),
       );
