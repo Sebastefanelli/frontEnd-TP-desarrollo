@@ -108,7 +108,7 @@ export class ApiService {
   }
 
   // Método para obtener estudiantes por legajo de docente
-  getAlumnosPorLegajoDocente(legajo: string): Observable<Alumno[]> {
+  getAlumnosPorLegajoDocente(legajo: number): Observable<Alumno[]> {
     return this.http.get<Alumno[]>(
       `${this.apiUrl}/cursos/docente/legajo/${legajo}/alumnos`,
     );

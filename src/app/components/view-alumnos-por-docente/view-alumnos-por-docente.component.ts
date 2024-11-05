@@ -56,7 +56,7 @@ export class componenteVerAlumnosPorDocente implements OnInit {
 
   cargarAlumnosPorDocente() {
     if (this.docenteLegajo) {
-      this.apiService.getAlumnosPorLegajoDocente(this.docenteLegajo).subscribe(
+      this.apiService.getAlumnosPorLegajoDocente(Number(this.docenteLegajo)).subscribe(
         (alumnos) => (this.alumnos = alumnos),
         (error) =>
           console.error("Error cargando alumnos por legajo del docente", error),
